@@ -1,4 +1,4 @@
 metals
-.vscode
-.class
-.tasty
+*.vscode
+*.class
+*.tasty
