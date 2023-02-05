@@ -46,6 +46,7 @@ object Main extends App {
       case "exit" => Canvas.exit
       case "dummy" => Canvas.dummy
       case "dummy2" => Canvas.dummy2
+      case "new_canvas" => Canvas.createCanvas
       // TODO: Add command here
       case _ => Canvas.default
     }
@@ -80,16 +81,20 @@ object Pixel {
    * Create a Pixel from a string "x,y"
    */
   def apply(s: String): Pixel = {
-    // TODO
-    Pixel(0, 0)
+    s.split(',') match {
+      case Array(x, y) => Pixel(x.toInt, y.toInt, '.')
+      case _ => Pixel(0, 0)
+    }
   }
 
   /**
    * Create a Pixel from a string "x,y" and a color 
    */
   def apply(s: String, color: Char): Pixel = {
-    // TODO
-    Pixel(0, 0)
+    s.split(',') match {
+      case Array(x, y) => Pixel(x.toInt, y.toInt, color)
+      case _ => Pixel(0, 0)
+    }
   }
 }
 
@@ -106,7 +111,10 @@ case class Canvas(width: Int = 0, height: Int = 0, pixels: Vector[Vector[Pixel]]
       println("Empty Canvas")
     } else {
       println(s"Size: $width x $height")
-      // TODO
+      pixels.foreach(row => {
+        row.foreach(pixel => print(pixel))
+        println
+      })
     }
   }
 
@@ -171,7 +179,7 @@ object Canvas {
   /**
    * Create a static canvas using the Pixel companion object
    */
-  def dummy2(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = 
+  def dummy2(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
     if (arguments.size > 0) 
       (canvas, Status(error = true, message = "dummy action does not excpect arguments"))
     else  {
@@ -185,6 +193,18 @@ object Canvas {
       
       (dummyCanvas, Status())
     }
+  }
 
-  // TODO: Add any useful method
+  def createCanvas(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
+    if (arguments.size != 3)
+      (canvas, Status(error = true, message = "createCanvas action expects 3 arguments"))
+    else {
+      val newCanvas = Canvas(
+        width = arguments(0).toInt,
+        height = arguments(1).toInt,
+        pixels = Vector.fill(arguments(1).toInt, arguments(0).toInt)(Pixel(0, 0, arguments(2).charAt(0)))
+      )
+      (newCanvas, Status()) 
+    }
+  }
 }
