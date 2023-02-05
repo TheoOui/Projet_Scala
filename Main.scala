@@ -1,4 +1,5 @@
 import scala.collection.immutable.ArraySeq
+import scala.io.Source
 
 /**
  * Main app containg program loop
@@ -47,6 +48,8 @@ object Main extends App {
       case "dummy" => Canvas.dummy
       case "dummy2" => Canvas.dummy2
       case "new_canvas" => Canvas.createCanvas
+      case "load_image" => Canvas.loadImage
+      case "update_pixel" => Canvas.updatePixel
       // TODO: Add command here
       case _ => Canvas.default
     }
@@ -124,7 +127,8 @@ case class Canvas(width: Int = 0, height: Int = 0, pixels: Vector[Vector[Pixel]]
    */
   def update(pixel: Pixel): Canvas = {
     
-    val newPixels = pixels // TODO - Update pixels
+    val newPixels = pixels
+      .updated(pixel.y, pixels(pixel.y).updated(pixel.x, pixel))
 
     this.copy(pixels = newPixels)
   }
@@ -135,7 +139,7 @@ case class Canvas(width: Int = 0, height: Int = 0, pixels: Vector[Vector[Pixel]]
   def updates(pixels: Seq[Pixel]): Canvas = {
     pixels.foldLeft(this)((f, p) => f.update(p))
   }
-
+  
   // TODO: Add any useful method
 }
 
@@ -204,6 +208,33 @@ object Canvas {
         height = arguments(1).toInt,
         pixels = Vector.fill(arguments(1).toInt, arguments(0).toInt)(Pixel(0, 0, arguments(2).charAt(0)))
       )
+      (newCanvas, Status()) 
+    }
+  }
+
+  def loadImage(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
+    if (arguments.size != 1)
+      (canvas, Status(error = true, message = "loadImage action expects 1 argument"))
+    else {
+      val content = Source.fromFile(arguments(0)).getLines().toVector
+
+      print(content.size)
+      print(content(0).size)
+
+      val newCanvas = Canvas(
+        width = content.size,
+        height = content(0).size,
+        pixels = (0 until content.size).map(x => (0 until content(0).size).map(y => Pixel(x, y, content(x).charAt(y))).toVector).toVector
+      )
+      (newCanvas, Status()) 
+    }
+  }
+
+  def updatePixel(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
+    if (arguments.size != 2)
+      (canvas, Status(error = true, message = "updatePixel action expects 2 arguments"))
+    else {
+      val newCanvas = canvas.update(Pixel(arguments(0).split(',')(0).toInt, arguments(0).split(',')(1).toInt, arguments(1).charAt(0)))
       (newCanvas, Status()) 
     }
   }
