@@ -50,6 +50,7 @@ object Main extends App {
       case "new_canvas" => Canvas.createCanvas
       case "load_image" => Canvas.loadImage
       case "update_pixel" => Canvas.updatePixel
+      case "drawline" => Canvas.drawLine
       // TODO: Add command here
       case _ => Canvas.default
     }
@@ -236,6 +237,42 @@ object Canvas {
     else {
       val newCanvas = canvas.update(Pixel(arguments(0).split(',')(0).toInt, arguments(0).split(',')(1).toInt, arguments(1).charAt(0)))
       (newCanvas, Status()) 
+    }
+  }
+
+  def drawLine(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
+    val (c,s) = checkInput(arguments, 3, canvas)
+    if (s.error) return (c,s)
+    else{
+
+      val x1 = arguments(0).split(',')(0).toInt
+      val y1 = arguments(0).split(',')(1).toInt
+      val x2 = arguments(1).split(',')(0).toInt
+      val y2 = arguments(1).split(',')(1).toInt
+      val color = arguments(2).charAt(0)
+
+      if (x1 == x2) {
+        val newCanvas = canvas.updates((y1 to y2).map(y => Pixel(x1, y, color)))
+        (newCanvas, Status()) 
+      } else if (y1 == y2) {
+        val newCanvas = canvas.updates((x1 to x2).map(x => Pixel(x, y1, color)))
+        (newCanvas, Status()) 
+      } else {
+        (canvas, Status(error = true, message = "drawLine action only supports horizontal and vertical lines"))
+      }
+    }  
+  }
+
+  def checkInput(arguments: Seq[String], argumentSize: Int ,canvas: Canvas): (Canvas, Status) = {
+    if (arguments.size != argumentSize){
+      (canvas, Status(error = true, message = "Action expects " + argumentSize + " arguments"))
+    }
+    else if ((arguments(0).split(',')(0).toInt > canvas.width) || (arguments(0).split(',')(1).toInt > canvas.height) ||
+        (arguments(1).split(',')(0).toInt > canvas.width) || (arguments(1).split(',')(1).toInt > canvas.height)){
+      (canvas, Status(error = true, message = "one or more argument(s) are out of bounds"))
+        }
+    else {
+      (canvas, Status()) 
     }
   }
 }
