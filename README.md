@@ -5,7 +5,7 @@
 #### Dans un Terminal au dossier de l'application :
 * Lancez la commande ``` scalac Main.scala ``` <br>
 ( afin de compiler le programme principale )
-* Ensuite, lancez la commande ``` bash scalac Main.scala```<br>
+* Ensuite, lancez la commande ```scalac Main.scala```<br>
 (ceci lance le programme principale)
 
 ## Utilisation de l'application
