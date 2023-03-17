@@ -51,6 +51,7 @@ object Main extends App {
       case "load_image" => Canvas.loadImage
       case "update_pixel" => Canvas.updatePixel
       case "drawline" => Canvas.drawLine
+      case "drawRectangle" => Canvas.drawRectangle
       // TODO: Add command here
       case _ => Canvas.default
     }
@@ -201,9 +202,9 @@ object Canvas {
   }
 
   def createCanvas(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
-    if (arguments.size != 3)
-      (canvas, Status(error = true, message = "createCanvas action expects 3 arguments"))
-    else {
+    if (arguments.size != 3) 
+      (canvas, Status(error = true, message = "createCanvas action excpect 3 arguments"))
+    else  {
       val newCanvas = Canvas(
         width = arguments(0).toInt,
         height = arguments(1).toInt,
@@ -214,9 +215,9 @@ object Canvas {
   }
 
   def loadImage(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
-    if (arguments.size != 1)
-      (canvas, Status(error = true, message = "loadImage action expects 1 argument"))
-    else {
+    if (arguments.size != 1) 
+      (canvas, Status(error = true, message = "createCanvas action excpect 1 argument"))
+    else  {
       val content = Source.fromFile(arguments(0)).getLines().toVector
 
       print(content.size)
@@ -232,9 +233,9 @@ object Canvas {
   }
 
   def updatePixel(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
-    if (arguments.size != 2)
-      (canvas, Status(error = true, message = "updatePixel action expects 2 arguments"))
-    else {
+    val (c,s) = checkInput(arguments, 2, canvas)
+    if (s.error) return (c,s)
+    else{
       val newCanvas = canvas.update(Pixel(arguments(0).split(',')(0).toInt, arguments(0).split(',')(1).toInt, arguments(1).charAt(0)))
       (newCanvas, Status()) 
     }
@@ -267,12 +268,32 @@ object Canvas {
     if (arguments.size != argumentSize){
       (canvas, Status(error = true, message = "Action expects " + argumentSize + " arguments"))
     }
-    else if ((arguments(0).split(',')(0).toInt > canvas.width) || (arguments(0).split(',')(1).toInt > canvas.height) ||
-        (arguments(1).split(',')(0).toInt > canvas.width) || (arguments(1).split(',')(1).toInt > canvas.height)){
+    else if ((arguments(0).split(',')(0).toInt > canvas.width)
+        || (arguments(0).split(',')(1).toInt > canvas.height) 
+          || (arguments(1).split(',')(0).toInt > canvas.width) 
+            || (arguments(1).split(',')(1).toInt > canvas.height)){
       (canvas, Status(error = true, message = "one or more argument(s) are out of bounds"))
         }
     else {
       (canvas, Status()) 
+    }
+  }
+
+  def drawRectangle(arguments: Seq[String], canvas: Canvas): (Canvas, Status) = {
+    val (c,s) = checkInput(arguments, 3, canvas)
+    if (s.error) return (c,s)
+    else{
+      val x1 = arguments(0).split(',')(0).toInt
+      val y1 = arguments(0).split(',')(1).toInt
+      val x2 = arguments(1).split(',')(0).toInt
+      val y2 = arguments(1).split(',')(1).toInt
+      val color = arguments(2).charAt(0)
+
+      val newCanvas = canvas.updates((x1 to x2).map(x => Pixel(x, y1, color)))
+      val newCanvas2 = newCanvas.updates((x1 to x2).map(x => Pixel(x, y2, color)))
+      val newCanvas3 = newCanvas2.updates((y1 to y2).map(y => Pixel(x1, y, color)))
+      val newCanvas4 = newCanvas3.updates((y1 to y2).map(y => Pixel(x2, y, color)))
+      (newCanvas4, Status()) 
     }
   }
 }

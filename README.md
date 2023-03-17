@@ -35,3 +35,14 @@ L'application fonctionne comme un terminal et plusieurs commandes sont à votre 
 Ici les coordonées sont toujours données sous la forme **x,y**.<br> <br>
 **Attention :** Le programme ne sais pas tracer la ligne dans le sens "inverse". <br>
 (Temporaire) : Le programme ne gère que les lignes verticales et horizontales
+
+> ### Commande ```drawRectangle [Coordonées A] [Coordonées B][Caractère de Dessin]``` <br> 
+> Cette commande trace un rectangle de la coordonnée A qui est le coin haut gauche du rectangle vers la coordonée B qui est le point bas droite du rectangle avec le caractère passé en paramètre.<br>
+Ici les coordonées sont toujours données sous la forme **x,y**.
+
+
+## Ajout
+
+> ### Fonction ```checkInput(Seq[String], Canvas)``` <br> 
+> Cette Fonction permet de vérifier si le nombre d'arguments est respecté mais aussi si les coordonées des points passées en paramètres appartiennent bien au canva.<br>
+Cette fonction n'est appelée que pour les commandes de dessin.
