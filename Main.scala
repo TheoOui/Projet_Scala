@@ -287,12 +287,12 @@ object Canvas {
       val y1 = arguments(0).split(',')(1).toInt
       val x2 = arguments(1).split(',')(0).toInt
       val y2 = arguments(1).split(',')(1).toInt
-      val color = arguments(2).charAt(0)
+      val color = arguments(2)
 
-      val newCanvas = canvas.updates((x1 to x2).map(x => Pixel(x, y1, color)))
-      val newCanvas2 = newCanvas.updates((x1 to x2).map(x => Pixel(x, y2, color)))
-      val newCanvas3 = newCanvas2.updates((y1 to y2).map(y => Pixel(x1, y, color)))
-      val newCanvas4 = newCanvas3.updates((y1 to y2).map(y => Pixel(x2, y, color)))
+      val newCanvas = drawLine(Seq(s"$x1,$y1", s"$x2,$y1", color), canvas)._1
+      val newCanvas2 = drawLine(Seq(s"$x1,$y1", s"$x1,$y2", color), newCanvas)._1
+      val newCanvas3 = drawLine(Seq(s"$x1,$y2", s"$x2,$y2", color), newCanvas2)._1
+      val newCanvas4 = drawLine(Seq(s"$x2,$y1", s"$x2,$y2", color), newCanvas3)._1
       (newCanvas4, Status()) 
     }
   }
